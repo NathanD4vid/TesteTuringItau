@@ -1,0 +1,88 @@
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+}
+
+body .container {
+    height: 80vh;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.container .botoes, .pixTela, .tedTela, .docTela{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 1.2rem;
+}
+
+.botoes .botaoSair{
+    margin-bottom: 10px;
+}
+
+.botoes p {
+    margin: 0;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+}
+
+.botoes p span{
+    font-size: 1.2rem;
+}
+
+.botoes button {
+    width: 70px;
+    height: 30px;
+    border-radius: 10px;
+}
+
+.botoes button:hover {
+    cursor: pointer;
+}
+
+.container .inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    font-size: 1rem;
+}
+
+.inputs button {
+    height: 35px;
+    border-radius: 20px;
+}
+
+.inputs h2 {
+    margin: 0;
+
+}
+
+.inputs label, input {
+    font-size: 1.2rem;
+}
+
+.container span{
+    font-size: 1.2rem;
+}
+
+.comprovante p{
+    font-size: 1.2rem;
+}
+
+.comprovante p span{
+    font-size: 1.2rem;
+}
+
+.msgErro {
+    gap: 20px;
+}
+
+.msgErro p{
+    font-size: 1.2rem;
+}
+

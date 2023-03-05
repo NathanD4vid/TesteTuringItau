@@ -1,0 +1,24 @@
+{
+  "name": "turingitau",
+  "version": "1.0.0",
+  "description": "Aplicação de front-end conectado a um back-end java spring com um banco h2.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NathanD4vid/TesteTuringItau.git"
+  },
+  "author": "Nathan David Mendes da Silva",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NathanD4vid/TesteTuringItau/issues"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "node-static": "^0.7.11"
+  },
+  "homepage": "https://github.com/NathanD4vid/TesteTuringItau#readme"
+}

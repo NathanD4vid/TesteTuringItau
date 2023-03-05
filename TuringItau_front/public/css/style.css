@@ -1,0 +1,40 @@
+body {
+    font-family: sans-serif;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.formLogin {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 80vh;
+    gap: 20px;
+    font-size: 1.2rem;
+}
+
+.formLogin .camposLogin {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    font-size: 1.2rem;
+}
+
+.camposLogin input {
+    font-size: 1.2rem;
+}
+
+button {
+    margin-top: 10px;
+    height: 50px;
+    width: 100px;
+    border-radius: 15px;
+    font-size: 1.2rem;
+}
+
+button:hover {
+    cursor: pointer;
+}

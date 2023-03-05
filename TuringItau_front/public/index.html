@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index - TesteTuringItau</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+
+<body>
+
+    <div class="conteudo">
+        
+            <div class="formLogin">
+                <h1>LOGIN</h1>
+                <div class="camposLogin">
+                    <label for="ipt_cpfLogin">CPF</label>
+                    <input id="ipt_cpfLogin" maxlength="11">
+                    <label for="ipt_senhaLogin">Senha</label>
+                    <input id="ipt_senhaLogin" maxlength="8">  
+                </div>
+                      
+                <button onclick="logarBanco()">Entrar</button>
+            </div>
+        
+    </div>
+
+</body>
+
+
+</html>
+
+
+
+<script>
+
+    function logarBanco() {
+        
+
+        var cpfFront = document.getElementById("ipt_cpfLogin").value;
+        var senhaFront = document.getElementById("ipt_senhaLogin").value;
+
+        fetch(`http://localhost:8080/usuarios/login`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                cpf: cpfFront,
+                senha: senhaFront
+            })
+        }).then(function (resposta) {
+            if (resposta.ok) {
+                resposta.json().then(function (dados) {
+                    console.log("Dados recebidos: ", JSON.stringify(dados));
+
+                    sessionStorage.ID = dados.id;
+                    sessionStorage.NOME = dados.nome;
+                    sessionStorage.SALDO = dados.saldo;
+
+                });
+                window.location = "telaInicialUsuario.html";
+            } else {
+                if (resposta.status == 404) 
+                    alert('CPF e/ou senha incorretos')
+                
+                console.log('CPF e/ou senha incorretos')
+            }
+        }).catch(function (resposta) {
+            console.log(`#ERRO: ${resposta}`);
+        });
+        
+
+    }
+
+</script>

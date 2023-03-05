@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User</title>
+    <link rel="stylesheet" href="./css/styleLoginUsuario.css">
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="botoes">
+            <div class="botaoSair">
+                <button onclick="deslogar()">Sair</button>
+            </div>
+            <p>Senhor(a): <span id="nomeEmissor">---</span></p>
+            <p>Saldo: R$<span id="saldoValor">0</span></p>
+            <p><b>Transferências:</b></p>
+            <div>
+                <button onclick="ativarPix()">PIX</button>
+                <button onclick="ativarTed()">TED</button>
+                <button onclick="ativarDoc()">DOC</button>
+            </div>
+            <span>------------------------------------------</span>
+        </div>
+
+        <div class="inputs" id="pixTela" style="display: none;">
+            <h2>PIX</h2>
+            <label for="ipt_cpf">CPF:</label>
+            <input id="ipt_cpf" maxlength="11">
+            <label for="ipt_quantia">QUANTIA:</label>
+            <input id="ipt_quantia">
+            <button onclick="transferirPix()">Confirmar</button>
+            <span>------------------------------------------</span>
+        </div>
+
+        <div class="inputs" id="tedTela" style="display: none;">
+            <h2>TED</h2>
+            <label for="ipt_agenciaTed">AGÊNCIA:</label>
+            <input id="ipt_agenciaTed" maxlength="5">
+            <label for="ipt_contaTed">CONTA:</label>
+            <input id="ipt_contaTed" maxlength="8">
+            <label for="ipt_quantiaTed">QUANTIA:</label>
+            <input id="ipt_quantiaTed">
+            <button onclick="transferirTed()">Confirmar</button>
+            <span>------------------------------------------</span>
+        </div>
+
+        <div class="inputs" id="docTela" style="display: none;">
+            <h2>DOC</h2>
+            <label for="ipt_agenciaDoc">AGÊNCIA:</label>
+            <input id="ipt_agenciaDoc" maxlength="5">
+            <label for="ipt_contaDoc">CONTA:</label>
+            <input id="ipt_contaDoc" maxlength="8">
+            <label for="ipt_quantiaDoc">QUANTIA:</label>
+            <input id="ipt_quantiaDoc">
+            <button onclick="transferirDoc()">Confirmar</button>
+            <span>------------------------------------------</span>
+        </div>
+
+        <div class="comprovante" id="comprovanteId" style="display: none;">
+            <h2>Sua transferencia foi realizada com sucesso</h2>
+            <p>Saldo do emissor: R$<span id="span_saldoEmissor">0</span></p>
+            <p>Saldo do receptor: R$<span id="span_saldoReceptor">0</span></p>
+        </div>
+
+        <div class="msgErro" id="mensagemErroId" style="display: none;">
+            <p><b>Sua transferência não foi completada pois:</b></p>
+            <p id="tipoErro"></p>
+        </div>
+
+    </div>
+</body>
+
+</html>
+
+<script>
+    var idEmissor = sessionStorage.ID;
+    nomeEmissor.innerHTML = sessionStorage.NOME;
+    saldoValor.innerHTML = sessionStorage.SALDO;
+
+
+    function ativarPix() {
+        pixTela.style.display = "flex";
+        tedTela.style.display = "none";
+        docTela.style.display = "none";
+        comprovanteId.style.display = "none";
+        mensagemErroId.style.display = "none";
+    }
+
+    function ativarTed() {
+        pixTela.style.display = "none";
+        tedTela.style.display = "flex";
+        docTela.style.display = "none";
+        comprovanteId.style.display = "none";
+        mensagemErroId.style.display = "none";
+    }
+
+    function ativarDoc() {
+        pixTela.style.display = "none";
+        tedTela.style.display = "none";
+        docTela.style.display = "flex";
+        comprovanteId.style.display = "none";
+        mensagemErroId.style.display = "none";
+    }
+
+    // TRANSFÊNCIA TED > 0 E <= 5000
+
+    function transferirPix() {
+        var cpfFront = document.getElementById("ipt_cpf").value;
+        var quantiaFront = Number(document.getElementById("ipt_quantia").value.replace(",", "."));
+
+
+        fetch(`http://localhost:8080/usuarios/${idEmissor}/transferencias/pix`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                cpf: cpfFront,
+                quantia: quantiaFront
+            })
+        }).then(function (resposta) {
+            if (resposta.ok) {
+                resposta.json().then(function (dados) {
+                    console.log("Dados recebidos: ", JSON.stringify(dados));
+
+                    pixTela.style.display = "none";
+                    comprovanteId.style.display = "block";
+                    console.log(dados.dadosEmissor.saldo)
+                    span_saldoEmissor.innerHTML = dados.dadosEmissor.saldo;
+                    span_saldoReceptor.innerHTML = dados.dadosReceptor.saldo;
+                    sessionStorage.SALDO = dados.dadosEmissor.saldo;
+                    saldoValor.innerHTML = sessionStorage.SALDO;
+                });
+
+            } else {
+                pixTela.style.display = "none";
+                mensagemErroId.style.display = "block";
+                if (resposta.status == 400)
+                    tipoErro.innerHTML = "O limite de valor máximo permitido para uma transferência via PIX é de R$ 5 mil. Ou a chave PIX CPF digitada é a mesma da sua conta.";
+
+                if (resposta.status == 401)
+                    tipoErro.innerHTML = "Úsuário não autenticado. Faça o login novamente.";
+
+                if (resposta.status == 404)
+                    tipoErro.innerHTML = "O CPF informado não está cadastrado a nenhuma conta.";
+
+                console.log(`Erro na transferência PIX: ${resposta.status}`)
+            }
+        }).catch(function (resposta) {
+            console.log(`#ERRO: ${resposta}`);
+        });
+    }
+
+
+    // TRANSFÊNCIA TED > 5000 E <= 10000
+
+    function transferirTed() {
+        var agenciaFront = document.getElementById("ipt_agenciaTed").value;
+        var contaFront = document.getElementById("ipt_contaTed").value;
+        var quantiaFront = Number(document.getElementById("ipt_quantiaTed").value.replace(",", "."));
+
+
+        fetch(`http://localhost:8080/usuarios/${idEmissor}/transferencias/ted`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                agencia: agenciaFront,
+                conta: contaFront,
+                quantia: quantiaFront
+            })
+        }).then(function (resposta) {
+            if (resposta.ok) {
+                resposta.json().then(function (dados) {
+                    console.log("Dados recebidos: ", JSON.stringify(dados));
+
+                    tedTela.style.display = "none";
+                    comprovanteId.style.display = "block";
+                    console.log(dados.dadosEmissor.saldo)
+                    span_saldoEmissor.innerHTML = dados.dadosEmissor.saldo;
+                    span_saldoReceptor.innerHTML = dados.dadosReceptor.saldo;
+                    sessionStorage.SALDO = dados.dadosEmissor.saldo;
+                    saldoValor.innerHTML = sessionStorage.SALDO;
+                });
+
+            } else {
+                tedTela.style.display = "none";
+                mensagemErroId.style.display = "block";
+                if (resposta.status == 400)
+                    tipoErro.innerHTML = "Transferências via TED só são permitidas para valores acima de R$ 5 mil e até R$ 10 mil. Ou a conta e agência digitada é a mesma da sua conta."
+
+                if (resposta.status == 401)
+                    tipoErro.innerHTML = "Úsuário não autenticado. Faça o login novamente."
+
+                if (resposta.status == 404)
+                    tipoErro.innerHTML = "A agência e/ou conta informadas não estão cadastradas a nenhuma conta."
+
+                console.log(`Erro na transferência TED: ${resposta.status}`)
+            }
+        }).catch(function (resposta) {
+            console.log(`#ERRO: ${resposta}`);
+        });
+    }
+
+    // TRANSFÊNCIA DOC >= 10000
+
+    function transferirDoc() {
+        var agenciaFront = document.getElementById("ipt_agenciaDoc").value;
+        var contaFront = document.getElementById("ipt_contaDoc").value;
+        var quantiaFront = Number(document.getElementById("ipt_quantiaDoc").value.replace(",", "."));
+
+
+        fetch(`http://localhost:8080/usuarios/${idEmissor}/transferencias/doc`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                agencia: agenciaFront,
+                conta: contaFront,
+                quantia: quantiaFront
+            })
+        }).then(function (resposta) {
+            if (resposta.ok) {
+                resposta.json().then(function (dados) {
+                    console.log("Dados recebidos: ", JSON.stringify(dados));
+
+                    docTela.style.display = "none";
+                    comprovanteId.style.display = "block";
+                    console.log(dados.dadosEmissor.saldo)
+                    span_saldoEmissor.innerHTML = dados.dadosEmissor.saldo;
+                    span_saldoReceptor.innerHTML = dados.dadosReceptor.saldo;
+                    sessionStorage.SALDO = dados.dadosEmissor.saldo;
+                    saldoValor.innerHTML = sessionStorage.SALDO;
+                });
+
+            } else {
+                docTela.style.display = "none";
+                mensagemErroId.style.display = "block";
+                if (resposta.status == 400)
+                    tipoErro.innerHTML = "Transferências via DOC só são permitidas para valores acima de R$ 10 mil. Ou a conta e agência digitada é a mesma da sua conta."
+
+                if (resposta.status == 401)
+                    tipoErro.innerHTML = "Úsuário não autenticado. Faça o login novamente."
+
+                if (resposta.status == 404)
+                    tipoErro.innerHTML = "A agência e/ou conta informadas não estão cadastradas a nenhuma conta."
+
+                console.log(`Erro na transferência DOC: ${resposta.status}`)
+            }
+        }).catch(function (resposta) {
+            console.log(`#ERRO: ${resposta}`);
+        });
+    }
+
+
+    function deslogar() {
+        fetch(`http://localhost:8080/usuarios/${idEmissor}/deslogar`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(function (resposta) {
+            if (resposta.ok) {
+
+                sessionStorage.clear();
+                window.location = "index.html";
+
+            }
+        }).catch(function (resposta) {
+            console.log(`#ERRO: ${resposta}`);
+        });
+    }
+</script>
