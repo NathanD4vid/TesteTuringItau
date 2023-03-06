@@ -14,5 +14,5 @@
   <li>2 - Instale as dependências do projeto com o comando 'npm i' dentro da pasta TuringItau_front</li>
   <li>3 - Dê 'npm start' para inicialização do front-end</li>
   <li>4 - Execute o back-end na pasta turingitau (versão java 17)</li>
-  <li>5 - Para visualizar a base de dados acesse o arquivo 'data.sql' na pasta 'resource' do backend ou o endereço 'localhost:3333/h2'</li>
+  <li>5 - Para visualizar a base de dados acesse o arquivo 'data.sql' na pasta 'resource' do backend ou o endereço 'localhost:3333/h2' user:admin senha:123</li>
 </ul>
